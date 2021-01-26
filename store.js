@@ -1,3 +1,7 @@
+/**
+ * ready function used for callback when the document is still loading or when the page
+ * has finished loading
+ */
 const ready = () => {
   let removeCartItemButtons = document.getElementsByClassName('btn-danger');
   console.log(removeCartItemButtons);
@@ -22,14 +26,42 @@ const ready = () => {
     let button = addToCartButtons[k];
     button.addEventListener('click', addToCartClicked);
   }
+
+  let purchaseButton = document.getElementsByClassName('btn-purchase')[0];
+  purchaseButton.addEventListener('click', purchaseClicked);
 };
 
+/**
+ * Clear the cart and alert the user
+ */
+const purchaseClicked = () => {
+  alert('Thank you for your purchase');
+  let cartItems = document.getElementsByClassName('cart-items')[0];
+  while (cartItems.hasChildNodes()) {
+    cartItems.removeChild(cartItems.firstChild);
+  }
+  updateCartTotal();
+};
+
+/**
+ * Click event listener for when user wants to remove a single cart item
+ * which removes the entire cart-items > cart-row of that specific item
+ *
+ * @param {Event data passed from event listener} event
+ */
 const removeCartItem = (event) => {
   let currentButtonClicked = event.target;
   currentButtonClicked.parentElement.parentElement.remove();
   updateCartTotal();
 };
 
+/**
+ * Change Event listener for when the quantity is changed
+ * which either set the input to 1 if it goes below 1 or is not a number
+ * and then updates the cart total accordingly
+ *
+ * @param {Event data passed from event listener} event
+ */
 const quantityChanged = (event) => {
   let input = event.target;
   if (isNaN(input.value) || input.value <= 0) {
@@ -38,6 +70,12 @@ const quantityChanged = (event) => {
   updateCartTotal();
 };
 
+/**
+ * Click Event listener for Add to Cart button to take meta data of merch item
+ * and then passed into addItemToCart function to add it to the cart
+ *
+ * @param {Event data passed in from event listener} event
+ */
 const addToCartClicked = (event) => {
   let button = event.target;
   let shopItem = button.parentElement.parentElement;
@@ -50,6 +88,15 @@ const addToCartClicked = (event) => {
   updateCartTotal();
 };
 
+/**
+ * Take in title, price, and imgSrc params to create a new cart-row element and add the
+ * necessary attributes, child elements, values, and event listeners to add to the
+ * cart section
+ *
+ * @param {Title string for item} title
+ * @param {Price string for item} price
+ * @param {Image source string for item} imgSrc
+ */
 const addItemToCart = (title, price, imgSrc) => {
   let cartRow = document.createElement('div');
   cartRow.className = 'cart-row';
@@ -86,12 +133,19 @@ const addItemToCart = (title, price, imgSrc) => {
   cartItems.append(cartRow);
 };
 
+/**
+ * Check if the document has finished loading, if so then we call the ready function
+ * to attach all the necessary event listeners to buttons and inputs
+ */
 if (document.readyState == 'loading') {
   document.addEventListener('DOMContentLoaded', ready);
 } else {
   ready();
 }
 
+/**
+ * Update cart total price based on the individual cart-row elements and their price data
+ */
 const updateCartTotal = () => {
   let cartItemContainer = document.getElementsByClassName('cart-items')[0];
   let cartRows = cartItemContainer.getElementsByClassName('cart-row');
